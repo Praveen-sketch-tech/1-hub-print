@@ -4,6 +4,7 @@ const cors = require('cors');
 const pool = require('./db');
 const authRoutes = require('./routes/auth');
 const shopRoutes = require('./routes/shops');
+const uploadRoutes = require('./routes/upload');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.get('/api/health', async (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/shops', shopRoutes);
+app.use('/api/upload', uploadRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
