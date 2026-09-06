@@ -1,0 +1,9 @@
+{
+  "name": "qr-print",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r dev"
+  }
+}
