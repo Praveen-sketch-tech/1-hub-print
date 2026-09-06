@@ -31,6 +31,11 @@ app.use('/api/files', fileRoutes);
 app.use('/p', express.static(path.join(__dirname, '../../../apps/customer/public')));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;

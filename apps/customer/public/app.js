@@ -97,8 +97,8 @@ el('fileInput').addEventListener('change', () => {
     el('uploadBtn').disabled = true;
     return;
   }
-  if (file.size > 20 * 1024 * 1024) {
-    el('uploadError').textContent = 'File exceeds 20 MB limit.';
+  if (file.size > 4 * 1024 * 1024) {
+    el('uploadError').textContent = 'File exceeds 4 MB limit.';
     show('uploadError');
     el('uploadBtn').disabled = true;
     return;
