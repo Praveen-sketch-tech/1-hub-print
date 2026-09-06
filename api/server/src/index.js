@@ -8,6 +8,7 @@ const shopRoutes = require('./routes/shops');
 const uploadRoutes = require('./routes/upload');
 const jobRoutes = require('./routes/jobs');
 const fileRoutes = require('./routes/files');
+const shopDashboardRoutes = require('./routes/shop');
 
 const app = express();
 
@@ -28,7 +29,9 @@ app.use('/api/shops', shopRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/files', fileRoutes);
+app.use('/api/shop', shopDashboardRoutes);
 app.use('/p', express.static(path.join(__dirname, '../../../apps/customer/public')));
+app.use('/dashboard', express.static(path.join(__dirname, '../../../apps/shop/public')));
 
 const PORT = process.env.PORT || 3000;
 

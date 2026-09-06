@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard — 1 Hub Print</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="container">
+
+  <header class="dashboard-header">
+    <h1 id="shopNameHeader">Dashboard</h1>
+    <button id="logoutBtn" class="secondary-btn">Log out</button>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="overview">Overview</button>
+    <button class="tab-btn" data-tab="jobs">Jobs</button>
+    <button class="tab-btn" data-tab="qr">QR Code</button>
+  </nav>
+
+  <section id="tab-overview" class="tab-content">
+    <div class="stats-grid">
+      <div class="stat-box"><span id="statPending">-</span><label>Pending</label></div>
+      <div class="stat-box"><span id="statPrinting">-</span><label>Printing</label></div>
+      <div class="stat-box"><span id="statCompleted">-</span><label>Completed</label></div>
+      <div class="stat-box"><span id="statFailed">-</span><label>Failed</label></div>
+    </div>
+  </section>
+
+  <section id="tab-jobs" class="tab-content" hidden>
+    <div class="filter-row">
+      <select id="statusFilter">
+        <option value="">All statuses</option>
+        <option value="QUEUED">Queued</option>
+        <option value="CLAIMED">Claimed</option>
+        <option value="PRINTING">Printing</option>
+        <option value="COMPLETED">Completed</option>
+        <option value="FAILED">Failed</option>
+        <option value="FAILED_PERMANENT">Failed (permanent)</option>
+        <option value="CANCELLED">Cancelled</option>
+      </select>
+      <button id="refreshJobsBtn" class="secondary-btn">Refresh</button>
+    </div>
+    <div id="jobsList"></div>
+  </section>
+
+  <section id="tab-qr" class="tab-content" hidden>
+    <div id="qrContainer" class="qr-box">
+      <p>Loading QR code...</p>
+    </div>
+  </section>
+
+</div>
+<script src="dashboard.js"></script>
+</body>
+</html>
