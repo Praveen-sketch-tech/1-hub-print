@@ -1,4 +1,5 @@
 const express = require('express');
+const crypto = require('crypto');
 const QRCode = require('qrcode');
 const pool = require('../db');
 const { requireAuth } = require('../middleware/auth');
@@ -127,6 +128,62 @@ router.get('/qr', requireAuth, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to generate QR code' });
+  }
+});
+
+// ---- Agent pairing code generation (dashboard side) ----
+router.post('/agent/pairing-code', requireAuth, async (req, res) => {
+  try {
+    const shop = await getOwnedShop(req.user.userId);
+    if (!shop) return res.status(404).json({ error: 'Shop not found for this account' });
+
+    const code = crypto.randomBytes(4).toString('hex').toUpperCase();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    const result = await pool.query(
+      `INSERT INTO agents (shop_id, pairing_code, pairing_code_expires_at)
+       VALUES ($1, $2, $3)
+       RETURNING id, pairing_code, pairing_code_expires_at`,
+      [shop.id, code, expiresAt]
+    );
+
+    res.status(201).json({
+      agentRowId: result.rows[0].id,
+      pairingCode: result.rows[0].pairing_code,
+      expiresAt: result.rows[0].pairing_code_expires_at,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to generate pairing code' });
+  }
+});
+
+// ---- List paired agents + their printers + online status ----
+router.get('/agents', requireAuth, async (req, res) => {
+  try {
+    const shop = await getOwnedShop(req.user.userId);
+    if (!shop) return res.status(404).json({ error: 'Shop not found for this account' });
+
+    const result = await pool.query(
+      `SELECT a.id, a.name, a.paired_at, a.last_heartbeat_at,
+              (a.last_heartbeat_at > now() - interval '2 minutes') AS online,
+              COALESCE(
+                json_agg(json_build_object('id', p.id, 'name', p.name, 'isDefault', p.is_default))
+                  FILTER (WHERE p.id IS NOT NULL),
+                '[]'
+              ) AS printers
+       FROM agents a
+       LEFT JOIN printers p ON p.agent_id = a.id
+       WHERE a.shop_id = $1 AND a.token_hash IS NOT NULL
+       GROUP BY a.id
+       ORDER BY a.paired_at DESC`,
+      [shop.id]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch agents' });
   }
 });
 

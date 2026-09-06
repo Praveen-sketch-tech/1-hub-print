@@ -9,6 +9,7 @@ const uploadRoutes = require('./routes/upload');
 const jobRoutes = require('./routes/jobs');
 const fileRoutes = require('./routes/files');
 const shopDashboardRoutes = require('./routes/shop');
+const agentRoutes = require('./routes/agent');
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/files', fileRoutes);
 app.use('/api/shop', shopDashboardRoutes);
+app.use('/api/agent', agentRoutes);
 app.use('/p', express.static(path.join(__dirname, '../../../apps/customer/public')));
 app.use('/dashboard', express.static(path.join(__dirname, '../../../apps/shop/public')));
 
