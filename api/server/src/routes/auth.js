@@ -6,6 +6,17 @@ const { signToken } = require('../utils/jwt');
 
 const router = express.Router();
 
+const DEFAULT_PRICING = [
+  ['A4', 'BW', false, 2],
+  ['A4', 'BW', true, 2],
+  ['A4', 'COLOR', false, 5],
+  ['A4', 'COLOR', true, 5],
+  ['A3', 'BW', false, 5],
+  ['A3', 'BW', true, 5],
+  ['A3', 'COLOR', false, 10],
+  ['A3', 'COLOR', true, 10],
+];
+
 const signupSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8, 'Password must be at least 8 characters'),
@@ -41,6 +52,14 @@ router.post('/signup', async (req, res) => {
       [user.id, shopName]
     );
     const shop = shopResult.rows[0];
+
+    for (const [paperSize, colorMode, duplex, price] of DEFAULT_PRICING) {
+      await client.query(
+        `INSERT INTO shop_pricing (shop_id, paper_size, color_mode, duplex, price_per_page)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [shop.id, paperSize, colorMode, duplex, price]
+      );
+    }
 
     await client.query('COMMIT');
 

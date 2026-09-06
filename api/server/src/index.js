@@ -1,10 +1,13 @@
-require('dotenv').config({ path: require('path').join(__dirname, '../../../.env') });
+require('dotenv').config({ path: process.env.DOTENV_CONFIG_PATH || require('path').join(__dirname, '../../../.env'), override: true });
+const path = require('path');
 const express = require('express');
 const cors = require('cors');
 const pool = require('./db');
 const authRoutes = require('./routes/auth');
 const shopRoutes = require('./routes/shops');
 const uploadRoutes = require('./routes/upload');
+const jobRoutes = require('./routes/jobs');
+const fileRoutes = require('./routes/files');
 
 const app = express();
 
@@ -23,6 +26,9 @@ app.get('/api/health', async (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/shops', shopRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/jobs', jobRoutes);
+app.use('/api/files', fileRoutes);
+app.use('/p', express.static(path.join(__dirname, '../../../apps/customer/public')));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

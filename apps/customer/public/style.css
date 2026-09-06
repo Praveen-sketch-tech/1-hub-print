@@ -1,0 +1,67 @@
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  background: #f4f5f7;
+  margin: 0;
+  color: #1a1a1a;
+}
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px 16px 60px;
+}
+header h1 {
+  font-size: 20px;
+  margin-bottom: 24px;
+}
+.screen { margin-top: 16px; }
+h2 { font-size: 16px; margin-bottom: 4px; }
+.hint { font-size: 13px; color: #666; margin: 4px 0 12px; }
+.error-text { color: #c62828; font-size: 14px; margin: 8px 0; }
+label { display: block; font-weight: 600; font-size: 14px; margin: 14px 0 6px; }
+input[type="text"], input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+input[type="file"] { width: 100%; margin: 8px 0; }
+.radio-group { display: flex; gap: 16px; }
+.radio-group label { font-weight: 400; display: flex; align-items: center; gap: 6px; }
+button {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  margin-top: 16px;
+}
+button:disabled { background: #a5b4fc; }
+.price-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 18px;
+  margin-top: 16px;
+  border: 1px solid #e5e7eb;
+}
+.status-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: #fef3c7;
+  color: #92400e;
+  font-weight: 700;
+  margin: 12px 0;
+}
+.status-badge.COMPLETED { background: #d1fae5; color: #065f46; }
+.status-badge.FAILED, .status-badge.FAILED_PERMANENT { background: #fee2e2; color: #991b1b; }
+.status-badge.PRINTING, .status-badge.CLAIMED { background: #dbeafe; color: #1e40af; }
