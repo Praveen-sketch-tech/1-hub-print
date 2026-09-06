@@ -215,6 +215,7 @@ function startTracking(jobId, token) {
 
 // ---- Entry point ----
 if (existingJobId && existingToken) {
+  el('shopName').textContent = 'Your Print Job';
   startTracking(existingJobId, existingToken);
 } else if (shopCode) {
   loadShop();
