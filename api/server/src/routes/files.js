@@ -8,7 +8,7 @@ router.get('/:fileId/download', async (req, res) => {
   const { fileId } = req.params;
   try {
     const result = await pool.query(
-      `SELECT id, original_name, mime_type, storage_provider, telegram_file_id, expires_at
+      `SELECT id, original_name, mime_type, storage_provider, telegram_file_id, expires_at, purged_at
        FROM files WHERE id = $1`,
       [fileId]
     );
@@ -16,6 +16,10 @@ router.get('/:fileId/download', async (req, res) => {
       return res.status(404).json({ error: 'File not found' });
     }
     const file = result.rows[0];
+
+    if (file.purged_at) {
+      return res.status(410).json({ error: 'File has been purged due to retention policy' });
+    }
 
     if (new Date(file.expires_at) < new Date()) {
       return res.status(410).json({ error: 'File has expired' });
