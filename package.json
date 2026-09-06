@@ -2,8 +2,13 @@
   "name": "qr-print",
   "private": true,
   "version": "0.1.0",
+  "workspaces": [
+    "api/server",
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "build": "pnpm -r build",
-    "dev": "pnpm -r dev"
+    "build": "npm run build --workspaces --if-present",
+    "dev": "npm run dev --workspaces --if-present"
   }
 }
