@@ -32,7 +32,6 @@ async function requireAgentAuth(req, res, next) {
   }
 }
 
-// ---- Register (pair) an agent using a pairing code from the shop dashboard ----
 router.post('/register', async (req, res) => {
   const { pairingCode, agentName } = req.body;
   if (!pairingCode) {
@@ -74,7 +73,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// ---- Heartbeat ----
 router.post('/heartbeat', requireAgentAuth, async (req, res) => {
   try {
     await pool.query('UPDATE agents SET last_heartbeat_at = now() WHERE id = $1', [req.agent.id]);
@@ -85,7 +83,6 @@ router.post('/heartbeat', requireAgentAuth, async (req, res) => {
   }
 });
 
-// ---- Sync printer list ----
 router.post('/printers', requireAgentAuth, async (req, res) => {
   const { printers } = req.body;
   if (!Array.isArray(printers)) {
@@ -114,10 +111,10 @@ router.post('/printers', requireAgentAuth, async (req, res) => {
   }
 });
 
-// ---- Claim next job (atomic — FOR UPDATE SKIP LOCKED prevents double-claim) ----
+// ---- Claim next job (atomic) — now also returns mimeType/originalName for the agent ----
 router.get('/jobs/next', requireAgentAuth, async (req, res) => {
   try {
-    const result = await pool.query(
+    const claimResult = await pool.query(
       `WITH next_job AS (
          SELECT id FROM jobs
          WHERE shop_id = $1 AND status = 'QUEUED'
@@ -133,15 +130,21 @@ router.get('/jobs/next', requireAgentAuth, async (req, res) => {
       [req.agent.shop_id, req.agent.id]
     );
 
-    if (result.rows.length === 0) {
+    if (claimResult.rows.length === 0) {
       return res.status(204).send();
     }
 
-    const job = result.rows[0];
+    const job = claimResult.rows[0];
+
+    const fileResult = await pool.query('SELECT mime_type, original_name FROM files WHERE id = $1', [job.file_id]);
+    const file = fileResult.rows[0] || {};
+
     res.json({
       jobId: job.id,
       fileId: job.file_id,
       downloadUrl: `/api/files/${job.file_id}/download`,
+      mimeType: file.mime_type || null,
+      originalName: file.original_name || null,
       copies: job.copies,
       colorMode: job.color_mode,
       paperSize: job.paper_size,
@@ -155,7 +158,6 @@ router.get('/jobs/next', requireAgentAuth, async (req, res) => {
   }
 });
 
-// ---- Mark job as actively printing ----
 router.post('/jobs/:jobId/printing', requireAgentAuth, async (req, res) => {
   try {
     const result = await pool.query(
@@ -174,7 +176,6 @@ router.post('/jobs/:jobId/printing', requireAgentAuth, async (req, res) => {
   }
 });
 
-// ---- Mark job complete ----
 router.post('/jobs/:jobId/complete', requireAgentAuth, async (req, res) => {
   try {
     const result = await pool.query(
@@ -193,7 +194,6 @@ router.post('/jobs/:jobId/complete', requireAgentAuth, async (req, res) => {
   }
 });
 
-// ---- Mark job failed (auto FAILED_PERMANENT after MAX_RETRIES) ----
 router.post('/jobs/:jobId/fail', requireAgentAuth, async (req, res) => {
   const { reason } = req.body;
   try {
